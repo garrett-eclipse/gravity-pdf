@@ -2,9 +2,8 @@
 
 namespace GFPDF\Helper;
 
-use blueliquiddesigns\Mpdf\mPDF;
-
-use Exception;
+use Mpdf\Mpdf;
+use Mpdf\Utils\UtfString;
 
 /**
  * Generates our PDF document using mPDF
@@ -439,8 +438,8 @@ class Helper_PDF {
 	 * @since 4.0
 	 */
 	protected function set_metadata() {
-		$this->mpdf->SetTitle( strcode2utf( strip_tags( $this->get_filename() ) ) );
-		$this->mpdf->SetAuthor( strcode2utf( strip_tags( get_bloginfo( 'name' ) ) ) );
+		$this->mpdf->SetTitle( UtfString::strcode2utf( strip_tags( $this->get_filename() ) ) );
+		$this->mpdf->SetAuthor( UtfString::strcode2utf( strip_tags( get_bloginfo( 'name' ) ) ) );
 	}
 
 	/**
@@ -619,7 +618,32 @@ class Helper_PDF {
 	 * @since 4.0
 	 */
 	protected function begin_pdf() {
-		$this->mpdf = new mPDF( '', $this->paper_size, 0, '', 15, 15, 16, 16, 9, 9, $this->orientation );
+		$this->mpdf = new mPDF( [
+			'fontDir' => [
+				$this->data->template_font_location,
+			],
+
+			'tmpDir' => $this->data->template_tmp_location . '/mpdf/',
+
+			'allow_output_buffering' => true,
+			'autoLangToFont'         => true,
+			'useSubstitutions'       => true,
+			'ignore_invalid_utf8'    => true,
+			'setAutoTopMargin'       => 'stretch',
+			'setAutoBottomMargin'    => 'stretch',
+			'enableImports'          => true,
+			'use_kwt'                => true,
+			'keepColumns'            => true,
+			'biDirectional'          => true,
+
+
+			'format'      => $this->paper_size,
+			'orientation' => $this->orientation,
+		] );
+
+		if ( defined( 'WP_DEBUG' ) && defined( 'WP_DEBUG_DISPLAY' ) && WP_DEBUG && WP_DEBUG_DISPLAY ) {
+			$this->mpdf->showStats = true;
+		}
 
 		/**
 		 * Allow $mpdf object class to be modified
@@ -793,7 +817,7 @@ class Helper_PDF {
 			$this->orientation = ( $orientation == 'landscape' ) ? 'L' : 'P';
 		} else {
 			$this->orientation = ( $orientation == 'landscape' ) ? '-L' : '';
-			$this->paper_size .= $this->orientation;
+			$this->paper_size  .= $this->orientation;
 		}
 	}
 

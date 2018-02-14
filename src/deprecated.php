@@ -188,7 +188,7 @@ class PDFRender extends GFPDF_Deprecated_Abstract {
 	 */
 	public static function alias_mpdf() {
 	    if( ! class_exists( 'mPDF' ) ) {
-		    class_alias( '\blueliquiddesigns\Mpdf\mPDF', 'mPDF' );
+		    class_alias( 'Mpdf\Mpdf', 'mPDF' );
 	    }
     }
 }
