@@ -714,17 +714,44 @@ if ( ! class_exists( 'mPDF' ) ) {
 		define( 'AUTOFONT_ALL', 1 );
 	}
 
+	/**
+	 * Class mPDF
+     *
+     * Allow our legacy software to still function even though the \mPDF class no longer exists (see \Mpdf\Mpdf)
+     *
+     * @since 5.0
+	 */
 	class mPDF {
 		protected $mpdf;
 
+		/**
+		 * mPDF constructor.
+		 *
+		 * @param string $mode
+		 * @param string $format
+		 * @param int    $default_font_size
+		 * @param string $default_font
+		 * @param int    $mgl
+		 * @param int    $mgr
+		 * @param int    $mgt
+		 * @param int    $mgb
+		 * @param int    $mgh
+		 * @param int    $mgf
+		 * @param string $orientation
+         *
+         * @since 5.0
+		 */
 		public function __construct( $mode = '', $format = 'A4', $default_font_size = 0, $default_font = '', $mgl = 15, $mgr = 15, $mgt = 16, $mgb = 16, $mgh = 9, $mgf = 9, $orientation = 'P' ) {
 
 			$data = GPDFAPI::get_data_class();
+			$defaultFontConfig = ( new \Mpdf\Config\FontVariables() )->getDefaults();
 
 			$this->mpdf = new \Mpdf\Mpdf( [
 				'fontDir' => [
 					$data->template_font_location,
 				],
+
+				'fontdata' => apply_filters( 'mpdf_font_data', $defaultFontConfig['fontdata'] ),
 
 				'tmpDir' => $data->template_tmp_location . '/mpdf/',
 
@@ -754,13 +781,29 @@ if ( ! class_exists( 'mPDF' ) ) {
 			] );
 		}
 
+		/**
+         * Allow the relaying of method calls to the new Mpdf class
+         *
+		 * @param $name
+		 * @param $arguments
+		 *
+		 * @return mixed
+         *
+         * @since 5.0
+		 */
 		public function __call( $name, $arguments ) {
 			if ( is_callable( [ $this->mpdf, $name ] ) ) {
 				return call_user_func_array( [ $this->mpdf, $name ], $arguments );
 			}
 		}
 
-
+		/**
+		 * @param int $type
+         *
+         * @Internal Removed from Mpdf v7
+         *
+         * @since 5.0
+		 */
 		public function SetAutoFont( $type = 0 ) {
 			$this->mpdf->autoLangToFont = $type === 1;
 			$this->mpdf->autoScriptToLang = $type === 1;

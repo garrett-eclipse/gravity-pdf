@@ -187,7 +187,6 @@ class Controller_PDF extends Helper_Abstract_Controller implements Helper_Interf
 		add_filter( 'mpdf_fontdata_path', [ $this->model, 'mpdf_tmp_font_path' ] );
 
 		/* Change mPDF settings */
-		add_filter( 'mpdf_current_font_path', [ $this->model, 'set_current_pdf_font' ], 10, 2 );
 		add_filter( 'mpdf_font_data', [ $this->model, 'register_custom_font_data_with_mPDF' ] );
 		add_filter( 'mpdf_font_data', [ $this->model, 'add_unregistered_fonts_to_mPDF' ], 20 );
 		add_filter( 'gfpdf_mpdf_init_class', [ $this->model, 'set_watermark_font' ], 10, 4 );
