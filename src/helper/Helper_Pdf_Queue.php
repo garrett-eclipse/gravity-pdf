@@ -162,4 +162,23 @@ class Helper_Pdf_Queue extends GF_Background_Process {
 			ORDER BY option_id DESC
 		", $key ), 'ARRAY_A' );
 	}
+
+	public function save() {
+		$key = $this->generate_key();
+
+		if ( ! empty( $this->data ) ) {
+			$data = [
+				'blog_id'   => get_current_blog_id(),
+				'timestamp' => current_time( 'mysql' ),
+				'data'      => $this->data,
+			];
+			update_site_option( $key, $data );
+		}
+
+		return $this;
+	}
+
+	public function is_process_running() {
+		return parent::is_process_running();
+	}
 }

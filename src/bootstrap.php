@@ -872,13 +872,18 @@ class Router implements Helper\Helper_Interface_Actions, Helper\Helper_Interface
 	 */
 	public function async_pdfs() {
 		$queue = new Helper\Helper_Pdf_Queue( $this->log );
+		$model = new Model\Model_Pdf_Queue( $queue, $this->log );
+		$view  = new View\View_Pdf_Queue( [], $this->gform );
+
 		$model_pdf = $this->singleton->get_class( 'Model_PDF' );
-		$class = new Controller\Controller_Pdf_Queue( $queue, $model_pdf, $this->log );
+		$class     = new Controller\Controller_Pdf_Queue( $model, $view, $queue, $model_pdf, $this->log );
 
 		$class->init();
 
 		$this->singleton->add_class( $queue );
 		$this->singleton->add_class( $class );
+		$this->singleton->add_class( $model );
+		$this->singleton->add_class( $view );
 	}
 
 	/**

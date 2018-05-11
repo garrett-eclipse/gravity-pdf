@@ -93,61 +93,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div>
 	</div>
 
-    <br>
-    <div>
-       <table class="widefat gfpdf_table">
-           <thead>
-           <tr>
-               <th colspan="5"><?php esc_html_e( 'Background Processing Queue', 'gravity-forms-pdf-extended' ); ?></th>
-           </tr>
-           </thead>
-
-           <tr>
-               <th>ID</th>
-               <th>Date</th>
-               <th>Key</th>
-               <th>Queue</th>
-               <th></th>
-           </tr>
-
-	       <?php
-	       $queue = GPDFAPI::get_mvc_class('Helper_Pdf_Queue');
-	       $queue_items = $queue->get_queued_items();
-
-	       foreach ($queue_items as $queue_item ) {
-
-	            $value = maybe_unserialize($queue_item['option_value']);
-	            foreach( $value['data'] as $commands) {
-
-		            foreach( $commands as $key => $command ) {
-
-			            $func = str_replace('\GFPDF\Statics\Queue_Callbacks::', '', $command['func']);
-			            $args = $command['args'];
-			            if( $func === 'send_notification') {
-			               $args[2] = $args[2]['name'];
-                         }
-
-			            $args = implode(', ', $args);
-		                   echo '<tr>';
-			            echo "<td>{$queue_item['option_id']}</td>";
-			            echo "<td>{$command['timestamp']}</td>";
-		                echo "<td>{$command['id']}</td>";
-			            echo "<td>$func ($args)</td>";
-
-			            if( $key === 0 ) {
-			                echo '<td rowspan="' . count( $commands ) . '">Stuff</td>';
-                        }
-
-			            echo '</tr>';
-		            }
-	            }
-	       }
-	       ?>
-       </table>
-
-
-    </div>
-
 	<?php
 	/* See https://gravitypdf.com/documentation/v5/gfpdf_post_tools_settings_page/ for more details about this action */
 	do_action( 'gfpdf_post_tools_settings_page' );

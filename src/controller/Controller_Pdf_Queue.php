@@ -4,6 +4,8 @@ namespace GFPDF\Controller;
 
 use GFPDF\Model\Model_PDF;
 use GFPDF\Helper\Helper_Abstract_Controller;
+use GFPDF\Helper\Helper_Abstract_Model;
+use GFPDF\Helper\Helper_Abstract_View;
 use GFPDF\Helper\Helper_Interface_Actions;
 use GFPDF\Helper\Helper_Interface_Filters;
 use GFPDF\Helper\Helper_Pdf_Queue;
@@ -96,20 +98,28 @@ class Controller_Pdf_Queue extends Helper_Abstract_Controller implements Helper_
 	protected $disable_queue = false;
 
 	/**
-	 * Set up our dependancies
+	 * Controller_Pdf_Queue constructor.
 	 *
-	 * @param \GFPDF\Helper\Helper_Pdf_Queue
-	 * @param \GFPDF\Helper\_Queue_Callbacks
-	 * @param \GFPDF\Model\Model_PDF $model_pdf
-	 * @param LoggerInterface        $log Our logger class
+	 * @param Helper_Abstract_Model $model
+	 * @param Helper_Abstract_View  $view
+	 * @param Helper_Pdf_Queue      $queue
+	 * @param Model_PDF             $model_pdf
+	 * @param LoggerInterface       $log
 	 *
 	 * @since 5.0
 	 */
-	public function __construct( Helper_Pdf_Queue $queue, Model_PDF $model_pdf, LoggerInterface $log ) {
+	public function __construct( Helper_Abstract_Model $model, Helper_Abstract_View $view, Helper_Pdf_Queue $queue, Model_PDF $model_pdf, LoggerInterface $log ) {
 		/* Assign our internal variables */
 		$this->log       = $log;
 		$this->model_pdf = $model_pdf;
 		$this->queue     = $queue;
+
+		/* Load our model and view */
+		$this->model = $model;
+		$this->model->setController( $this );
+
+		$this->view = $view;
+		$this->view->setController( $this );
 	}
 
 	/**
@@ -136,6 +146,8 @@ class Controller_Pdf_Queue extends Helper_Abstract_Controller implements Helper_
 
 		add_action( 'gform_post_resend_notification', [ $this, 'queue_async_resend_notification_tasks' ], 10, 3 );
 		add_action( 'gform_post_resend_all_notifications', [ $this, 'queue_dispatch_resend_notification_tasks' ] );
+
+		add_action( 'gfpdf_post_tools_settings_page', [ $this->model, 'queue_management'], 3 );
 	}
 
 	/**
@@ -308,7 +320,6 @@ class Controller_Pdf_Queue extends Helper_Abstract_Controller implements Helper_
 					'id'   => 'cleanup-pdf-' . $form['id'] . '-' . $entry['id'],
 					'func' => '\GFPDF\Statics\Queue_Callbacks::cleanup_pdfs',
 					'args' => [ $form['id'], $entry['id'] ],
-					'timestamp' => current_time('mysql' ),
 				];
 			}
 		}
@@ -363,7 +374,6 @@ class Controller_Pdf_Queue extends Helper_Abstract_Controller implements Helper_
 						'id'   => $this->get_queue_id( $form, $entry, $pdf ),
 						'func' => '\GFPDF\Statics\Queue_Callbacks::create_pdf',
 						'args' => [ $entry['id'], $pdf['id'] ],
-						'timestamp' => current_time('mysql' ),
 					];
 
 					/* Only queue each PDF once (even if attached to multiple notifications) */
@@ -400,7 +410,6 @@ class Controller_Pdf_Queue extends Helper_Abstract_Controller implements Helper_
 						'id'   => $this->get_queue_id( $form, $entry, $pdf ) . '-' . $notification['id'],
 						'func' => '\GFPDF\Statics\Queue_Callbacks::send_notification',
 						'args' => [ $form['id'], $entry['id'], $notification ],
-						'timestamp' => current_time('mysql' ),
 					];
 
 					/* Only queue each notification once (even if there are multiple PDFs) */
