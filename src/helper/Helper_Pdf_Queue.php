@@ -141,4 +141,25 @@ class Helper_Pdf_Queue extends GF_Background_Process {
 
 		return ( count( $callbacks ) > 0 ) ? $callbacks : false;
 	}
+
+	public function get_queued_items() {
+		global $wpdb;
+
+		$table  = $wpdb->options;
+		$column = 'option_name';
+
+		if ( is_multisite() ) {
+			$table  = $wpdb->sitemeta;
+			$column = 'meta_key';
+		}
+
+		$key = $wpdb->esc_like( $this->identifier . '_batch_' ) . '%';
+
+		return $wpdb->get_results( $wpdb->prepare( "
+			SELECT option_id, option_name, option_value
+			FROM {$table}
+			WHERE {$column} LIKE %s
+			ORDER BY option_id DESC
+		", $key ), 'ARRAY_A' );
+	}
 }

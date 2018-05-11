@@ -308,6 +308,7 @@ class Controller_Pdf_Queue extends Helper_Abstract_Controller implements Helper_
 					'id'   => 'cleanup-pdf-' . $form['id'] . '-' . $entry['id'],
 					'func' => '\GFPDF\Statics\Queue_Callbacks::cleanup_pdfs',
 					'args' => [ $form['id'], $entry['id'] ],
+					'timestamp' => current_time('mysql' ),
 				];
 			}
 		}
@@ -362,6 +363,7 @@ class Controller_Pdf_Queue extends Helper_Abstract_Controller implements Helper_
 						'id'   => $this->get_queue_id( $form, $entry, $pdf ),
 						'func' => '\GFPDF\Statics\Queue_Callbacks::create_pdf',
 						'args' => [ $entry['id'], $pdf['id'] ],
+						'timestamp' => current_time('mysql' ),
 					];
 
 					/* Only queue each PDF once (even if attached to multiple notifications) */
@@ -398,6 +400,7 @@ class Controller_Pdf_Queue extends Helper_Abstract_Controller implements Helper_
 						'id'   => $this->get_queue_id( $form, $entry, $pdf ) . '-' . $notification['id'],
 						'func' => '\GFPDF\Statics\Queue_Callbacks::send_notification',
 						'args' => [ $form['id'], $entry['id'], $notification ],
+						'timestamp' => current_time('mysql' ),
 					];
 
 					/* Only queue each notification once (even if there are multiple PDFs) */
