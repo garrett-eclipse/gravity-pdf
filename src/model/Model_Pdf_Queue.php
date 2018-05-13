@@ -78,16 +78,6 @@ class Model_Pdf_Queue extends Helper_Abstract_Model {
 		$this->gform = $gform;
 	}
 
-	public function queue_management() {
-		$controller = $this->getController();
-
-		$queue_items = $this->get_queue_display_data();
-		$controller->view->queue( [
-			'queue_status' => $queue_items[0],
-			'queue_items'  => $queue_items[1],
-		] );
-	}
-
 	public function get_queue_display_data() {
 		$queue_items = $this->queue->get_queued_items();
 		$status      = $this->queue->is_process_running();
@@ -120,7 +110,10 @@ class Model_Pdf_Queue extends Helper_Abstract_Model {
 			}
 		}
 
-		return [ $status, $queue ];
+		return [
+			'status' => $status,
+			'queue'  => $queue,
+		];
 	}
 
 	public function get_queue_function_name( $function_name ) {
@@ -163,7 +156,7 @@ class Model_Pdf_Queue extends Helper_Abstract_Model {
 	}
 
 	public function get_background_process_all( \WP_REST_Request $request ) {
-		return true;
+		return $this->get_queue_display_data();
 	}
 
 	public function run_background_process_all( \WP_REST_Request $request ) {

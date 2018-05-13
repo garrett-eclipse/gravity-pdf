@@ -1,5 +1,4 @@
 import React from 'react'
-import { connect } from 'react-redux'
 
 /**
  * @package     Gravity PDF
@@ -28,36 +27,14 @@ import { connect } from 'react-redux'
  Found
  */
 
-/**
- * @since 5.0
- */
-export class ActionButtons extends React.Component {
 
-  render () {
-    return (
-      <>
-        <button id="gfpdf-background-process-run-all" className="button gfpdf-button button-primary" type="button">Run
-          All Tasks
-        </button>
+const Loading = () => (
+  <tbody>
 
-        <button id="gfpdf-background-process-force-run-all" className="button gfpdf-button" type="button">Force Run All
-          Tasks
-        </button>
+  <tr>
+    <td colSpan="6">Loading...</td>
+  </tr>
+  </tbody>
+)
 
-        <button id="gfpdf-background-process-delete-all" className="button gfpdf-button" type="button">
-          Delete All Tasks
-        </button>
-      </>
-    )
-  }
-}
-
-const mapStateToProps = (state) => {
-  return {}
-}
-
-const mapDispatchToProps = (dispatch) => {
-  return {}
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(ActionButtons)
+export default Loading

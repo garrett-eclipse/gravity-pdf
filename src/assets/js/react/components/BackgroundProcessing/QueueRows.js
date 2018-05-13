@@ -1,5 +1,4 @@
 import React from 'react'
-import { connect } from 'react-redux'
 
 /**
  * @package     Gravity PDF
@@ -31,33 +30,32 @@ import { connect } from 'react-redux'
 /**
  * @since 5.0
  */
-export class ActionButtons extends React.Component {
+export default class QueueRows extends React.Component {
 
   render () {
-    return (
-      <>
-        <button id="gfpdf-background-process-run-all" className="button gfpdf-button button-primary" type="button">Run
-          All Tasks
-        </button>
+    return this.props.queue.map((group, groupIndex) => {
+      const groupKey = 'gfpdf-background-process-group-' + groupIndex
+      return (
+        <tbody key={groupKey}>
+        {group.map((task, taskIndex) => {
+          const taskKey = 'gfpdf-background-process-task-' + groupIndex + '-' + taskIndex
+          return (
+            <tr key={taskKey}>
+              <td>{task.id}</td>
+              <td>{task.option_id}</td>
+              <td>{task.timestamp}</td>
+              <td>{task.status}</td>
+              <td>{task.queue}</td>
+              <td>
+                {taskIndex === 0 ? <span><a href="#">Run queue</a> | <a href="#">Run task</a> | </span> : null}
+                <a href="#" className="delete">Delete</a>
+              </td>
+            </tr>
+          )
+        })}
+        </tbody>
+      )
+    })
 
-        <button id="gfpdf-background-process-force-run-all" className="button gfpdf-button" type="button">Force Run All
-          Tasks
-        </button>
-
-        <button id="gfpdf-background-process-delete-all" className="button gfpdf-button" type="button">
-          Delete All Tasks
-        </button>
-      </>
-    )
   }
 }
-
-const mapStateToProps = (state) => {
-  return {}
-}
-
-const mapDispatchToProps = (dispatch) => {
-  return {}
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(ActionButtons)

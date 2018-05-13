@@ -5,6 +5,7 @@ import ReduxThunk from 'redux-thunk'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import templateReducer from '../reducers/templateReducer'
 import coreFontsReducer from '../reducers/coreFontReducer'
+import backgroundProcessingReducer from '../reducers/backgroundProcessingReducer'
 
 /**
  * @package     Gravity PDF
@@ -57,5 +58,6 @@ export function setupReducers () {
   return combineReducers({
     template: templateReducer,
     coreFonts: coreFontsReducer,
+    backgroundProcessing: backgroundProcessingReducer,
   })
 }

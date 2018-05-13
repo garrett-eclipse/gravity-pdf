@@ -147,7 +147,7 @@ class Controller_Pdf_Queue extends Helper_Abstract_Controller implements Helper_
 		add_action( 'gform_post_resend_notification', [ $this, 'queue_async_resend_notification_tasks' ], 10, 3 );
 		add_action( 'gform_post_resend_all_notifications', [ $this, 'queue_dispatch_resend_notification_tasks' ] );
 
-		add_action( 'gfpdf_post_tools_settings_page', [ $this->model, 'queue_management' ], 3 );
+		add_action( 'gfpdf_post_tools_settings_page', [ $this->view, 'queue' ], 3 );
 		add_action( 'rest_api_init', [ $this, 'add_queue_management_endpoints' ] );
 	}
 

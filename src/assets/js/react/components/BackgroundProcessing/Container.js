@@ -3,8 +3,10 @@ import { connect } from 'react-redux'
 import ActionButtons from './ActionButtons'
 import { refreshQueueApi } from '../../thunks/backgroundProcessing'
 
+import Loading from './Loading'
+import QueueRows from './QueueRows'
+
 import Spinner from '../Spinner'
-import { addToConsole } from '../../actions/coreFonts'
 
 /**
  * @package     Gravity PDF
@@ -68,6 +70,14 @@ export class Container extends React.Component {
    * @since 5.0
    */
   render () {
+    const isLoading = this.props.isLoading
+    const queue = this.props.queue
+    const tableRows = (!isLoading && queue.length) ? (
+      <QueueRows queue={this.props.queue} />
+    ) : (
+      <Loading />
+    )
+
     return (
       <>
         <table className="widefat gfpdf_table">
@@ -82,11 +92,7 @@ export class Container extends React.Component {
           </tr>
           </thead>
 
-          <tbody>
-          <tr>
-            <td colSpan="6">Loading...</td>
-          </tr>
-          </tbody>
+          {tableRows}
         </table>
 
         <ActionButtons />
@@ -97,7 +103,9 @@ export class Container extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-
+    isLoading: state.backgroundProcessing.loadingQueue,
+    status: state.backgroundProcessing.status,
+    queue: state.backgroundProcessing.queue,
   }
 }
 

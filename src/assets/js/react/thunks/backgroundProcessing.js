@@ -42,12 +42,17 @@ export function refreshQueueApi () {
     dispatch(refreshQueue())
 
     try {
-      const queue = request
+      const response = await request
         .get(GFPDF.restUrl + 'background-process/')
         .set('X-WP-Nonce', GFPDF.restNonce)
 
-      dispatch({type: REFRESH_QUEUE_SUCCESS, queue: queue.body})
+      dispatch({
+        type: REFRESH_QUEUE_SUCCESS,
+        queue: response.body.queue,
+        status: response.body.status
+      })
     } catch (e) {
+      console.log(e)
       dispatch({type: REFRESH_QUEUE_FAILURE, e})
     }
   }

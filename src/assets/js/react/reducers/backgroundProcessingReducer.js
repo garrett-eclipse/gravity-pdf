@@ -37,8 +37,9 @@ import {
  * @since 5.0
  */
 export const initialState = {
-  queue: {},
-  loadingQueue: false,
+  queue: [],
+  status: false,
+  loadingQueue: true,
 }
 
 /**
@@ -61,12 +62,16 @@ export default function (state = initialState, action) {
       return {
         ...state,
         loadingQueue: true,
+        queue: [],
+        status: false
       }
 
     case REFRESH_QUEUE_SUCCESS:
       return {
         ...state,
         loadingQueue: false,
+        queue: action.queue,
+        status: action.status
       }
 
     case REFRESH_QUEUE_FAILURE:
