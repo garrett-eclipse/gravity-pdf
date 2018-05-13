@@ -1,12 +1,12 @@
-import React from 'react'
-
-import { createStore, combineReducers, applyMiddleware } from 'redux'
-import ReduxThunk from 'redux-thunk'
-import { composeWithDevTools } from 'redux-devtools-extension'
-import templateReducer from '../reducers/templateReducer'
-import coreFontsReducer from '../reducers/coreFontReducer'
+import {
+  REFRESH_QUEUE,
+  REFRESH_QUEUE_SUCCESS,
+  REFRESH_QUEUE_FAILURE
+} from '../actionTypes/backgroundProcessing'
 
 /**
+ * Redux Actions - payloads of information that send data from your application to your store
+ *
  * @package     Gravity PDF
  * @copyright   Copyright (c) 2018, Blue Liquid Designs
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
@@ -33,29 +33,8 @@ import coreFontsReducer from '../reducers/coreFontReducer'
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* Combine our Redux Reducers */
-const reducers = setupReducers()
-
-/* Create our store */
-const store = createStore(reducers, composeWithDevTools(
-  applyMiddleware(ReduxThunk),
-))
-
-export function getStore () {
-  return store
-}
-
-/**
- * Combine our Redux reducers for use in a single store
- * If you want to add new top-level keys to our store, this is the place
- *
- * @returns {Function}
- *
- * @since 4.1
- */
-export function setupReducers () {
-  return combineReducers({
-    template: templateReducer,
-    coreFonts: coreFontsReducer,
-  })
+export const refreshQueue = () => {
+  return {
+    type: REFRESH_QUEUE
+  }
 }

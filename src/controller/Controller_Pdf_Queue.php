@@ -147,7 +147,8 @@ class Controller_Pdf_Queue extends Helper_Abstract_Controller implements Helper_
 		add_action( 'gform_post_resend_notification', [ $this, 'queue_async_resend_notification_tasks' ], 10, 3 );
 		add_action( 'gform_post_resend_all_notifications', [ $this, 'queue_dispatch_resend_notification_tasks' ] );
 
-		add_action( 'gfpdf_post_tools_settings_page', [ $this->model, 'queue_management'], 3 );
+		add_action( 'gfpdf_post_tools_settings_page', [ $this->model, 'queue_management' ], 3 );
+		add_action( 'rest_api_init', [ $this, 'add_queue_management_endpoints' ] );
 	}
 
 	/**
@@ -175,7 +176,7 @@ class Controller_Pdf_Queue extends Helper_Abstract_Controller implements Helper_
 	public function maybe_disable_submission_notifications( $is_disabled, $notification, $form, $entry ) {
 
 		/* If a plugin has already disabled notifications we won't queue up the notifications/PDFs as a background process */
-		if( $is_disabled ) {
+		if ( $is_disabled ) {
 			$this->disable_queue = true;
 
 			return $is_disabled;
@@ -243,7 +244,7 @@ class Controller_Pdf_Queue extends Helper_Abstract_Controller implements Helper_
 	 * @since 5.0
 	 */
 	public function queue_async_form_submission_tasks( $entry, $form ) {
-		if( ! $this->disable_queue ) {
+		if ( ! $this->disable_queue ) {
 			/* Push and trigger async queue */
 			$this->queue
 				->push_to_queue( $this->get_queue_tasks( $entry, $form ) )
@@ -283,6 +284,32 @@ class Controller_Pdf_Queue extends Helper_Abstract_Controller implements Helper_
 				->save()
 				->dispatch();
 		}
+	}
+
+	public function add_queue_management_endpoints() {
+		register_rest_route( 'gravity-pdf/v1', 'background-process/', [
+			'methods'             => \WP_REST_Server::READABLE,
+			'callback'            => [ $this->model, 'get_background_process_all' ],
+			'permission_callback' => [ $this->model, 'check_permission_edit_settings' ],
+		] );
+
+		register_rest_route( 'gravity-pdf/v1', '/background-process/run/all', [
+			'methods'             => \WP_REST_Server::READABLE,
+			'callback'            => [ $this->model, 'run_background_process_all' ],
+			'permission_callback' => [ $this->model, 'check_permission_edit_settings' ],
+		] );
+
+		register_rest_route( 'gravity-pdf/v1', '/background-process/run/queue/', [
+			'methods'             => \WP_REST_Server::READABLE,
+			'callback'            => [ $this->model, 'run_background_process_queue' ],
+			'permission_callback' => [ $this->model, 'check_permission_edit_settings' ],
+		] );
+
+		register_rest_route( 'gravity-pdf/v1', '/background-process/run/task/', [
+			'methods'             => \WP_REST_Server::READABLE,
+			'callback'            => [ $this->model, 'run_background_process_task' ],
+			'permission_callback' => [ $this->model, 'check_permission_edit_settings' ],
+		] );
 	}
 
 	/**

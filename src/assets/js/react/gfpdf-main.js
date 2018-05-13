@@ -1,6 +1,7 @@
 import $ from 'jquery'
 import templateBootstrap from './bootstrap/templateBootstrap'
 import coreFontBootstrap from './bootstrap/coreFontBootstrap'
+import backgroundProcessingBootstrap from './bootstrap/backgroundProcessingBootstrap'
 
 /**
  * JS Entry point for WebPack
@@ -64,5 +65,10 @@ $(function () {
   /* Initialise the Core Font downloader */
   if ($('#gfpdf-install-core-fonts').length) {
     coreFontBootstrap()
+  }
+
+  /* Initialse Background Processing */
+  if ($('#gfpdf-background-processing-status').length) {
+    backgroundProcessingBootstrap()
   }
 })

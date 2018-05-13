@@ -51,33 +51,41 @@ if ( ! defined( 'ABSPATH' ) ) {
             <th>Date</th>
             <th>Status</th>
             <th>Queue</th>
-            <th></th>
+            <th><a href="#">Refresh</a></th>
         </tr>
         </thead>
 
-		<?php foreach ( $args['queue_items'] as $task ): ?>
-            <tr data-option-id="<?= esc_attr( $task['id'] ); ?>" data-queue-id="<?= esc_attr( $task['key'] ); ?>">
-                <td><?= $task['id']; ?></td>
-                <td><?= $task['key']; ?></td>
-                <td><?= $task['timestamp']; ?></td>
-                <td><?= $task['status']; ?></td>
-                <td><?= $task['queue'] ?></td>
-                <td>
-					<?php if ( ! $args['queue_status'] ): ?>
-						<?php if ( $task['first_item'] ): ?><a href="#">Run queue</a> | <a href="#">Run
-                            task</a> | <?php endif; ?>
-                        <a href="#" class="delete">Delete</a>
-					<?php endif; ?>
-                </td>
-            </tr>
-		<?php endforeach; ?>
+<!--		--><?php //foreach ( $args['queue_items'] as $group ): ?>
+<!--            <tbody>-->
+<!--			--><?php //foreach ( $group as $id => $task ): ?>
+<!---->
+<!--                <tr data-task-id="--><?//= esc_attr( $task['task_id'] ); ?><!--">-->
+<!--                    <td>--><?//= $task['id']; ?><!--</td>-->
+<!--                    <td>--><?//= $task['task_id']; ?><!--</td>-->
+<!--                    <td>--><?//= $task['timestamp']; ?><!--</td>-->
+<!--                    <td>--><?//= $task['status']; ?><!--</td>-->
+<!--                    <td>--><?//= $task['queue'] ?><!--</td>-->
+<!--                    <td>-->
+<!--						--><?php //if ( ! $args['queue_status'] ): ?>
+<!--							--><?php //if ( $id === 0 ): ?>
+<!--                                <a href="#">Run queue</a> | <a href="#">Run task</a> |-->
+<!--							--><?php //endif; ?>
+<!--                            <a href="#" class="delete">Delete</a>-->
+<!--						--><?php //endif; ?>
+<!--                    </td>-->
+<!--                </tr>-->
+<!--			--><?php //endforeach; ?>
+<!--            </tbody>-->
+<!--		--><?php //endforeach; ?>
     </table>
 
-	<?php if ( ! $args['queue_status'] ): ?>
-        <button class="button gfpdf-button button-primary" type="button">Run All Tasks</button>
-        <button class="button gfpdf-button" type="button">Force Run All Tasks</button>
-        <button class="button gfpdf-button" type="button">Delete All Tasks</button>
-	<?php else: ?>
-        <button class="button gfpdf-button" type="button">Cancel All Tasks</button>
-	<?php endif; ?>
+    <div id="gfpdf-background-processing-actions">
+
+    </div>
+
+<!--	--><?php //if ( ! $args['queue_status'] ): ?>
+<!--        <button id="gfpdf-background-process-run-all" class="button gfpdf-button button-primary" type="button">Run All Tasks</button>-->
+<!--        <button id="gfpdf-background-process-force-run-all" class="button gfpdf-button" type="button">Force Run All Tasks</button>-->
+<!--        <button id="gfpdf-background-process-delete-all" class="button gfpdf-button" type="button">Delete All Tasks</button>-->
+<!--	--><?php //endif; ?>
 </div>

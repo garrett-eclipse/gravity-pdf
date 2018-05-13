@@ -181,4 +181,8 @@ class Helper_Pdf_Queue extends GF_Background_Process {
 	public function is_process_running() {
 		return parent::is_process_running();
 	}
+
+	public function is_queue_empty() {
+		return parent::is_queue_empty();
+	}
 }

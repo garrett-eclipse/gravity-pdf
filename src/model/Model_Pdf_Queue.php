@@ -4,6 +4,7 @@ namespace GFPDF\Model;
 
 use GFPDF\Helper\Helper_Abstract_Model;
 use GFPDF\Helper\Helper_Pdf_Queue;
+use GFPDF\Helper\Helper_Abstract_Form;
 
 use Psr\Log\LoggerInterface;
 
@@ -61,10 +62,20 @@ class Model_Pdf_Queue extends Helper_Abstract_Model {
 	 */
 	protected $queue;
 
-	public function __construct( Helper_Pdf_Queue $queue, LoggerInterface $log ) {
+	/**
+	 * Holds the abstracted Gravity Forms API specific to Gravity PDF
+	 *
+	 * @var \GFPDF\Helper\Helper_Abstract_Form
+	 *
+	 * @since 5.0
+	 */
+	protected $gform;
+
+	public function __construct( Helper_Pdf_Queue $queue, LoggerInterface $log, Helper_Abstract_Form $gform ) {
 		/* Assign our internal variables */
 		$this->queue = $queue;
 		$this->log   = $log;
+		$this->gform = $gform;
 	}
 
 	public function queue_management() {
@@ -83,9 +94,10 @@ class Model_Pdf_Queue extends Helper_Abstract_Model {
 		$status_text = ( $status ) ? 'Processing' : 'Pending';
 
 		$queue = [];
+		$i     = 0;
 		foreach ( $queue_items as $queue_item ) {
 			$queue_data = maybe_unserialize( $queue_item['option_value'] );
-			foreach ( $queue_data['data'] as $commands ) {
+			foreach ( $queue_data['data'] as $queue_id => $commands ) {
 				foreach ( $commands as $key => $command ) {
 					$function_name = $this->get_queue_function_name( $command['func'] );
 					$function_args = $this->get_queue_function_args( $function_name, $command['args'] );
@@ -94,15 +106,17 @@ class Model_Pdf_Queue extends Helper_Abstract_Model {
 						$status_text = 'Retrying';
 					}
 
-					$queue[] = [
-						'id'         => $queue_item['option_id'],
-						'key'        => $command['id'],
-						'timestamp'  => $queue_data['timestamp'],
-						'status'     => $status_text,
-						'queue'      => "$function_name ($function_args)",
-						'first_item' => $key === 0,
+					$queue[ $i ][] = [
+						'id'        => $queue_item['option_id'],
+						'option_id' => $queue_item['option_name'],
+						'queue_id'  => $queue_id,
+						'task_id'   => $command['id'],
+						'timestamp' => $queue_data['timestamp'],
+						'status'    => $status_text,
+						'queue'     => "$function_name ($function_args)",
 					];
 				}
+				$i++;
 			}
 		}
 
@@ -140,4 +154,23 @@ class Model_Pdf_Queue extends Helper_Abstract_Model {
 		return implode( ', ', $args );
 	}
 
+	public function check_permission_edit_settings() {
+		if ( ! $this->gform->has_capability( 'gravityforms_edit_settings' ) ) {
+			return new \WP_Error( 'rest_forbidden', esc_html__( 'You do not have permission to access this endpoint.', 'gravity-forms-pdf-extended' ), [ 'status' => 401 ] );
+		}
+
+		return true;
+	}
+
+	public function get_background_process_all( \WP_REST_Request $request ) {
+		return true;
+	}
+
+	public function run_background_process_all( \WP_REST_Request $request ) {
+		if ( ! $this->queue->is_process_running() && ! $this->queue->is_queue_empty() ) {
+			$begin_queue = $this->queue->dispatch();
+		}
+
+
+	}
 }

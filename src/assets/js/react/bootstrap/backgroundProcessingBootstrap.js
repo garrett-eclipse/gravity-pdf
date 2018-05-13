@@ -1,12 +1,13 @@
 import React from 'react'
+import { render } from 'react-dom'
+import { Provider } from 'react-redux'
+import Container from '../components/BackgroundProcessing/Container'
 
-import { createStore, combineReducers, applyMiddleware } from 'redux'
-import ReduxThunk from 'redux-thunk'
-import { composeWithDevTools } from 'redux-devtools-extension'
-import templateReducer from '../reducers/templateReducer'
-import coreFontsReducer from '../reducers/coreFontReducer'
+import { getStore } from '../store'
 
 /**
+ * Background Processing Boostrap
+ *
  * @package     Gravity PDF
  * @copyright   Copyright (c) 2018, Blue Liquid Designs
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
@@ -30,32 +31,21 @@ import coreFontsReducer from '../reducers/coreFontReducer'
 
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ Found
  */
-
-/* Combine our Redux Reducers */
-const reducers = setupReducers()
-
-/* Create our store */
-const store = createStore(reducers, composeWithDevTools(
-  applyMiddleware(ReduxThunk),
-))
-
-export function getStore () {
-  return store
-}
 
 /**
- * Combine our Redux reducers for use in a single store
- * If you want to add new top-level keys to our store, this is the place
+ * Mount our Background Processing UI on the DOM
  *
- * @returns {Function}
- *
- * @since 4.1
+ * @since 5.0
  */
-export function setupReducers () {
-  return combineReducers({
-    template: templateReducer,
-    coreFonts: coreFontsReducer,
-  })
+export default function backgroundProcessingBootstrap () {
+  const container = document.getElementById('gfpdf-background-processing-status')
+  const store = getStore()
+
+  render(
+    <Provider store={store}><Container /></Provider>,
+    container
+  )
+
 }

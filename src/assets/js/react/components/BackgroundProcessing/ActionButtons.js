@@ -1,10 +1,5 @@
 import React from 'react'
-
-import { createStore, combineReducers, applyMiddleware } from 'redux'
-import ReduxThunk from 'redux-thunk'
-import { composeWithDevTools } from 'redux-devtools-extension'
-import templateReducer from '../reducers/templateReducer'
-import coreFontsReducer from '../reducers/coreFontReducer'
+import { connect } from 'react-redux'
 
 /**
  * @package     Gravity PDF
@@ -30,32 +25,46 @@ import coreFontsReducer from '../reducers/coreFontReducer'
 
  You should have received a copy of the GNU General Public License
  along with this program; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ Found
  */
-
-/* Combine our Redux Reducers */
-const reducers = setupReducers()
-
-/* Create our store */
-const store = createStore(reducers, composeWithDevTools(
-  applyMiddleware(ReduxThunk),
-))
-
-export function getStore () {
-  return store
-}
 
 /**
- * Combine our Redux reducers for use in a single store
- * If you want to add new top-level keys to our store, this is the place
- *
- * @returns {Function}
- *
- * @since 4.1
+ * @since 5.0
  */
-export function setupReducers () {
-  return combineReducers({
-    template: templateReducer,
-    coreFonts: coreFontsReducer,
-  })
+export class ActionButtons extends React.Component {
+
+  /**
+   * Renders our Core Font downloader UI
+   *
+   * @returns {XML}
+   *
+   * @since 5.0
+   */
+  render () {
+    return (
+      <>
+        <button id="gfpdf-background-process-run-all" className="button gfpdf-button button-primary" type="button">Run
+          All Tasks
+        </button>
+
+        <button id="gfpdf-background-process-force-run-all" className="button gfpdf-button" type="button">Force Run All
+          Tasks
+        </button>
+
+        <button id="gfpdf-background-process-delete-all" className="button gfpdf-button" type="button">
+          Delete All Tasks
+        </button>
+      </>
+    )
+  }
 }
+
+const mapStateToProps = (state) => {
+  return {}
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ActionButtons)

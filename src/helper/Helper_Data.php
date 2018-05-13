@@ -289,6 +289,9 @@ class Helper_Data {
 			'coreFontItemErrorMessage'   => esc_html__( 'Failed installation of %s', 'gravity-forms-pdf-extended' ),
 			'coreFontCounter'            => esc_html__( 'Fonts remaining:', 'gravity-forms-pdf-extended' ),
 			'coreFontRetry'              => esc_html__( 'Retry Failed Downloads?', 'gravity-forms-pdf-extended' ),
+
+			'restUrl'   => rest_url( 'gravity-pdf/v1/' ),
+			'restNonce' => wp_create_nonce( 'wp_rest' ),
 		] );
 	}
 }
