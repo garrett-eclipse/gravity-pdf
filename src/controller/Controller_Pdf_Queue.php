@@ -310,6 +310,19 @@ class Controller_Pdf_Queue extends Helper_Abstract_Controller implements Helper_
 			'callback'            => [ $this->model, 'run_background_process_task' ],
 			'permission_callback' => [ $this->model, 'check_permission_edit_settings' ],
 		] );
+
+		/* Use CREATABLE / POST to allow for a payload body */
+		register_rest_route( 'gravity-pdf/v1', '/background-process/delete/', [
+			'methods'             => \WP_REST_Server::CREATABLE,
+			'callback'            => [ $this->model, 'delete_background_processes_all' ],
+			'permission_callback' => [ $this->model, 'check_permission_edit_settings' ],
+		] );
+
+		register_rest_route( 'gravity-pdf/v1', '/background-process/delete/task/', [
+			'methods'             => \WP_REST_Server::CREATABLE,
+			'callback'            => [ $this->model, 'delete_background_processes_task' ],
+			'permission_callback' => [ $this->model, 'check_permission_edit_settings' ],
+		] );
 	}
 
 	/**

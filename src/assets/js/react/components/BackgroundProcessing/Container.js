@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import ActionButtons from './ActionButtons'
-import { refreshQueueApi } from '../../thunks/backgroundProcessing'
+import { refreshQueueApiThunk } from '../../thunks/backgroundProcessing'
 
 import FullWidthTableRow from './FullWidthTableRow'
 import Refresh from './Refresh'
@@ -73,7 +73,7 @@ export class Container extends React.Component {
       return <FullWidthTableRow text="Nothing in the queue" />
     }
 
-    return <QueueRows queue={queue} />
+    return <QueueRows />
   }
 
   /**
@@ -88,7 +88,7 @@ export class Container extends React.Component {
       isLoading,
       queue,
       errorMessage,
-      refreshQueue
+      refreshQueue,
     } = this.props
 
     return (
@@ -120,8 +120,8 @@ export class Container extends React.Component {
 const mapStateToProps = (state) => {
   return {
     isLoading: state.backgroundProcessing.loadingQueue,
-    status: state.backgroundProcessing.status,
     queue: state.backgroundProcessing.queue,
+    status: state.backgroundProcessing.status,
     successMessage: state.backgroundProcessing.successMessage,
     errorMessage: state.backgroundProcessing.errorMessage,
   }
@@ -133,7 +133,7 @@ const mapDispatchToProps = (dispatch) => {
       if (typeof e !== 'undefined') {
         e.preventDefault()
       }
-      dispatch(refreshQueueApi())
+      dispatch(refreshQueueApiThunk())
     },
   }
 }

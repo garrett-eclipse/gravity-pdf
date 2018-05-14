@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { runBackgroundProcessAllThunk, runDeleteAllTasksThunk } from '../../thunks/backgroundProcessing'
+import { runDeleteTaskThunk } from '../../thunks/backgroundProcessing'
 
 /**
  * @package     Gravity PDF
@@ -32,25 +32,17 @@ import { runBackgroundProcessAllThunk, runDeleteAllTasksThunk } from '../../thun
 /**
  * @since 5.0
  */
-export class ActionButtons extends React.Component {
+export class DeleteTask extends React.Component {
+
+  deleteTask = (e) => {
+    e.preventDefault()
+
+    this.props.runDeleteTaskApi(this.props.task)
+  }
 
   render () {
     return (
-      <>
-        <button onClick={this.props.runAllTasks} id="gfpdf-background-process-run-all"
-                className="button gfpdf-button button-primary" type="button">
-          Run All Tasks
-        </button>
-
-        <button id="gfpdf-background-process-force-run-all" className="button gfpdf-button" type="button">
-          Force Run All Tasks
-        </button>
-
-        <button onClick={this.props.runDeleteAllTasks} id="gfpdf-background-process-delete-all"
-                className="button gfpdf-button" type="button">
-          Delete All Tasks
-        </button>
-      </>
+      <a href="#" onClick={this.deleteTask} className="delete">Delete</a>
     )
   }
 }
@@ -61,16 +53,10 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    runAllTasks: (e) => {
-      e.preventDefault()
-      dispatch(runBackgroundProcessAllThunk())
-    },
-
-    runDeleteAllTasks: (e) => {
-      e.preventDefault()
-      dispatch(runDeleteAllTasksThunk())
+    runDeleteTaskApi: (task) => {
+      dispatch(runDeleteTaskThunk(task))
     },
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ActionButtons)
+export default connect(mapStateToProps, mapDispatchToProps)(DeleteTask)

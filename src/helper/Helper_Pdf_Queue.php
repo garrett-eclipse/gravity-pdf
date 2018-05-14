@@ -178,6 +178,22 @@ class Helper_Pdf_Queue extends GF_Background_Process {
 		return $this;
 	}
 
+	public function update( $key, $data ) {
+		if ( ! empty( $data ) ) {
+			$old_value = maybe_unserialize(get_site_option( $key ));
+			if ( $old_value ) {
+				$data = array(
+					'blog_id' => get_current_blog_id(),
+					'timestamp' => $old_value['timestamp'],
+					'data'    => $data,
+				);
+				update_site_option( $key, $data );
+			}
+		}
+
+		return $this;
+	}
+
 	public function is_process_running() {
 		return parent::is_process_running();
 	}

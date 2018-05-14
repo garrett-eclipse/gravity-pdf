@@ -166,7 +166,62 @@ class Model_Pdf_Queue extends Helper_Abstract_Model {
 				return $begin_queue;
 			}
 
-			return json_encode(true);
+			return json_encode( true );
 		}
+	}
+
+	public function delete_background_processes_all( \WP_REST_Request $request ) {
+		if ( $this->queue->is_process_running() || $this->queue->is_queue_empty() ) {
+			return new \WP_Error( 'bad_request', [ 'status' => 400 ] );
+		}
+
+		if ( ! $this->queue->clear_queue( true ) ) {
+			return new \WP_Error( 'update_failed', [ 'status' => 500 ] );
+		}
+
+		return json_encode( true );
+	}
+
+	public function delete_background_processes_task( \WP_REST_Request $request ) {
+		$option_id = $request->get_param( 'option_id' );
+		$queue_id  = $request->get_param( 'queue_id' );
+		$task_id   = $request->get_param( 'task_id' );
+
+		if ( $this->queue->is_process_running() || $this->queue->is_queue_empty() ) {
+			return new \WP_Error( 'bad_request', [ 'status' => 400 ] );
+		}
+
+		foreach ( [ $option_id, $queue_id, $task_id ] as $item ) {
+			if ( $item === null ) {
+				return new \WP_Error( 'bad_request', [ 'status' => 400 ] );
+			}
+		}
+
+		$queue = $new_queue = get_site_option( $option_id );
+
+		if ( ! isset( $queue['data'][ $queue_id ] ) ) {
+			return new \WP_Error( 'bad_request', 'Could not find queue item', [ 'status' => 400 ] );
+		}
+
+		foreach ( $queue['data'][ $queue_id ] as $key => $task ) {
+			if ( $task['id'] === $task_id ) {
+				unset( $new_queue['data'][ $queue_id ][ $key ] );
+
+				if ( count( $new_queue['data'][ $queue_id ] ) === 0 ) {
+					unset( $new_queue['data'][ $queue_id ] );
+				}
+				break;
+			}
+		}
+
+		if ( $queue !== $new_queue ) {
+			if ( count( $new_queue['data'] ) === 0 ) {
+				$this->queue->delete( $option_id );
+			} else {
+				$this->queue->update( $option_id, $new_queue['data'] );
+			}
+		}
+
+		return json_encode( true );
 	}
 }

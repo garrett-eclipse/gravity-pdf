@@ -1,6 +1,8 @@
 import {
   DO_API_CALL, EMPTY_QUEUE, REFRESH_QUEUE_FAILURE, REFRESH_QUEUE_SUCCESS,
-  RUN_BACKGROUND_PROCESS_ALL_FAILURE, RUN_BACKGROUND_PROCESS_ALL_SUCCESS
+  RUN_BACKGROUND_PROCESS_ALL_FAILURE, RUN_BACKGROUND_PROCESS_ALL_SUCCESS, RUN_DELETE_ALL_FAILURE,
+  RUN_DELETE_ALL_SUCCESS, RUN_DELETE_TASK_FAILURE,
+  RUN_DELETE_TASK_SUCCESS
 } from '../actionTypes/backgroundProcessing'
 
 /**
@@ -86,6 +88,9 @@ export default function (state = initialState, action) {
       }
 
     case REFRESH_QUEUE_FAILURE:
+    case RUN_BACKGROUND_PROCESS_ALL_FAILURE:
+    case RUN_DELETE_TASK_FAILURE:
+    case RUN_DELETE_ALL_FAILURE:
       return {
         ...state,
         loadingQueue: false,
@@ -93,23 +98,36 @@ export default function (state = initialState, action) {
       }
 
     case RUN_BACKGROUND_PROCESS_ALL_SUCCESS:
-      let newQueue = [...state.queue]
-      newQueue.map((group) => group.map((task) => task.status = 'Processing'))
-      console.log(newQueue)
       return {
         ...state,
-        queue: newQueue,
+        queue: [...state.queue].map((group) => group.map((task) => task.status = 'Processing')),
         loadingQueue: false,
         status: action.status,
         successMessage: action.successMessage,
       }
 
-    case RUN_BACKGROUND_PROCESS_ALL_FAILURE:
+    case RUN_DELETE_ALL_SUCCESS:
       return {
         ...state,
+        queue: [],
         loadingQueue: false,
-        errorMessage: action.errorMessage,
+        successMessage: action.successMessage,
       }
+
+    case RUN_DELETE_TASK_SUCCESS:
+      let newQueue = state.queue.map(group => {
+        return group.filter(task => task !== action.task)
+      }).filter(group => group.length)
+
+      console.log(newQueue)
+
+      return {
+        ...state,
+        queue: newQueue,
+        loadingQueue: false,
+        successMessage: action.successMessage,
+      }
+
   }
 
   /* None of these actions fired so return state */

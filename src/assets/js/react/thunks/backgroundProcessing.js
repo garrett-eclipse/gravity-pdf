@@ -2,7 +2,11 @@ import {
   REFRESH_QUEUE_SUCCESS,
   REFRESH_QUEUE_FAILURE,
   RUN_BACKGROUND_PROCESS_ALL_SUCCESS,
-  RUN_BACKGROUND_PROCESS_ALL_FAILURE
+  RUN_BACKGROUND_PROCESS_ALL_FAILURE,
+  RUN_DELETE_ALL_SUCCESS,
+  RUN_DELETE_ALL_FAILURE,
+  RUN_DELETE_TASK_SUCCESS,
+  RUN_DELETE_TASK_FAILURE
 } from '../actionTypes/backgroundProcessing'
 import {
   doApiCall, emptyQueue
@@ -38,7 +42,7 @@ import request from 'superagent'
  Found
  */
 
-export function refreshQueueApi () {
+export function refreshQueueApiThunk () {
   return async (dispatch) => {
     dispatch(doApiCall())
 
@@ -61,7 +65,7 @@ export function refreshQueueApi () {
   }
 }
 
-export function runBackgroundProcessAll () {
+export function runBackgroundProcessAllThunk () {
   return async (dispatch) => {
     dispatch(doApiCall())
 
@@ -84,6 +88,50 @@ export function runBackgroundProcessAll () {
       }
 
       dispatch({type: RUN_BACKGROUND_PROCESS_ALL_FAILURE, errorMessage})
+    }
+  }
+}
+
+export function runDeleteAllTasksThunk (task) {
+  return async (dispatch) => {
+    dispatch(doApiCall())
+
+    try {
+      await request
+        .post(GFPDF.restUrl + 'background-process/delete')
+        .set('X-WP-Nonce', GFPDF.restNonce)
+        .send(task)
+
+      dispatch({
+        type: RUN_DELETE_ALL_SUCCESS,
+        status: true,
+        successMessage: 'All Tasks Deleted'
+      })
+    } catch (e) {
+      let errorMessage = e.response.body.message || 'Could not delete all tasks from the queue. Please try again.'
+      dispatch({type: RUN_DELETE_ALL_FAILURE, errorMessage})
+    }
+  }
+}
+
+export function runDeleteTaskThunk (task) {
+  return async (dispatch) => {
+    dispatch(doApiCall())
+
+    try {
+      await request
+        .post(GFPDF.restUrl + 'background-process/delete/task')
+        .set('X-WP-Nonce', GFPDF.restNonce)
+        .send(task)
+
+      dispatch({
+        type: RUN_DELETE_TASK_SUCCESS,
+        successMessage: 'Task Deleted',
+        task
+      })
+    } catch (e) {
+      let errorMessage = e.response.body.message || 'Could not delete task from the queue. Please try again.'
+      dispatch({type: RUN_DELETE_TASK_FAILURE, errorMessage})
     }
   }
 }

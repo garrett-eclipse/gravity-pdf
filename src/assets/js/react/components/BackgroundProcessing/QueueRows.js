@@ -1,4 +1,6 @@
 import React from 'react'
+import { connect } from 'react-redux'
+import DeleteTask from './DeleteTask'
 
 /**
  * @package     Gravity PDF
@@ -30,8 +32,7 @@ import React from 'react'
 /**
  * @since 5.0
  */
-export default class QueueRows extends React.Component {
-
+export class QueueRows extends React.Component {
   render () {
     return this.props.queue.map((group, groupIndex) => {
       const groupKey = 'gfpdf-background-process-group-' + groupIndex
@@ -48,7 +49,7 @@ export default class QueueRows extends React.Component {
               <td>{task.queue}</td>
               <td>
                 {taskIndex === 0 ? <span><a href="#">Run queue</a> | <a href="#">Run task</a> | </span> : null}
-                <a href="#" className="delete">Delete</a>
+                <DeleteTask task={task} />
               </td>
             </tr>
           )
@@ -59,3 +60,15 @@ export default class QueueRows extends React.Component {
 
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    queue: state.backgroundProcessing.queue,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(QueueRows)
