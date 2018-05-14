@@ -83,14 +83,8 @@ class View_Pdf_Queue extends Helper_Abstract_View {
 
 
 	public function queue() {
-
-		/* Load any variables we want to pass to our view */
-		$args = [
-			'edit_cap' => $this->gform->has_capability( 'gravityforms_edit_settings' ),
-		];
-
-		/* Render our view */
-		$this->load( 'table', $args );
-
+		if ( $this->gform->has_capability( 'gravityforms_edit_settings' ) || ( is_multisite() && is_super_admin() ) ) {
+			$this->load( 'table' );
+		}
 	}
 }

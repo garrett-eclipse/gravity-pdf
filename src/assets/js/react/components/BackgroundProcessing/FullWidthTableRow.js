@@ -27,14 +27,13 @@ import React from 'react'
  Found
  */
 
-
-const Loading = () => (
+const FullWidthTableRow = ({text}) => (
   <tbody>
 
   <tr>
-    <td colSpan="6">Loading...</td>
+    <td colSpan="6">{text}</td>
   </tr>
   </tbody>
 )
 
-export default Loading
+export default FullWidthTableRow

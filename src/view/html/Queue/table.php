@@ -39,8 +39,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="hr-divider"></div>
 
 <h3>
-    <span><i class="fa fa-clock-o"></i> <?php esc_html_e( 'Background Processing', 'gravity-forms-pdf-extended' ); ?></span>
+    <span><i class="fa fa-clock-o"></i> <?php esc_html_e( 'Monitor Background Processing', 'gravity-forms-pdf-extended' ); ?></span>
 </h3>
+
+<p>When a form is submitted, or when using the <a href="#">Resend Notifications feature</a>, Gravity PDF generates and emails all PDF documents in a background process. Tasks that are "Processing" are being actively run in the background. Tasks that are "Pending" are in the queue, but the background process is not currently running. <a href="#">Read more about background processing in Gravity PDF</a>.</p>
 
 <div id="gfpdf-background-processing-status">
     Loading...

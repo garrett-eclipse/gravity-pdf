@@ -1,5 +1,6 @@
 import {
-  REFRESH_QUEUE, REFRESH_QUEUE_FAILURE, REFRESH_QUEUE_SUCCESS
+  DO_API_CALL, EMPTY_QUEUE, REFRESH_QUEUE_FAILURE, REFRESH_QUEUE_SUCCESS,
+  RUN_BACKGROUND_PROCESS_ALL_FAILURE, RUN_BACKGROUND_PROCESS_ALL_SUCCESS
 } from '../actionTypes/backgroundProcessing'
 
 /**
@@ -40,6 +41,8 @@ export const initialState = {
   queue: [],
   status: false,
   loadingQueue: true,
+  successMessage: '',
+  errorMessage: '',
 }
 
 /**
@@ -58,12 +61,19 @@ export default function (state = initialState, action) {
     /**
      * @since 5.0
      */
-    case REFRESH_QUEUE:
+    case EMPTY_QUEUE:
+      return {
+        ...state,
+        queue: [],
+      }
+
+    case DO_API_CALL:
       return {
         ...state,
         loadingQueue: true,
-        queue: [],
-        status: false
+        status: false,
+        successMessage: '',
+        errorMessage: '',
       }
 
     case REFRESH_QUEUE_SUCCESS:
@@ -71,13 +81,34 @@ export default function (state = initialState, action) {
         ...state,
         loadingQueue: false,
         queue: action.queue,
-        status: action.status
+        status: action.status,
+        errorMessage: '',
       }
 
     case REFRESH_QUEUE_FAILURE:
       return {
         ...state,
         loadingQueue: false,
+        errorMessage: action.errorMessage,
+      }
+
+    case RUN_BACKGROUND_PROCESS_ALL_SUCCESS:
+      let newQueue = [...state.queue]
+      newQueue.map((group) => group.map((task) => task.status = 'Processing'))
+      console.log(newQueue)
+      return {
+        ...state,
+        queue: newQueue,
+        loadingQueue: false,
+        status: action.status,
+        successMessage: action.successMessage,
+      }
+
+    case RUN_BACKGROUND_PROCESS_ALL_FAILURE:
+      return {
+        ...state,
+        loadingQueue: false,
+        errorMessage: action.errorMessage,
       }
   }
 

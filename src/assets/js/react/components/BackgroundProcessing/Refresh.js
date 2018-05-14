@@ -1,6 +1,6 @@
+import React from 'react'
+
 /**
- * Our Redux Action Type Constants
- *
  * @package     Gravity PDF
  * @copyright   Copyright (c) 2018, Blue Liquid Designs
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
@@ -27,10 +27,8 @@
  Found
  */
 
-export const DO_API_CALL = 'DO_API_CALL'
-export const EMPTY_QUEUE = 'EMPTY_QUEUE'
+const Refresh = ({callbackFunction}) => (
+  <a href="#" onClick={callbackFunction}>Refresh</a>
+)
 
-export const REFRESH_QUEUE_SUCCESS = 'REFRESH_QUEUE_SUCCESS'
-export const REFRESH_QUEUE_FAILURE = 'REFRESH_QUEUE_FAILURE'
-export const RUN_BACKGROUND_PROCESS_ALL_SUCCESS = 'RUN_BACKGROUND_PROCESS_ALL_SUCCESS'
-export const RUN_BACKGROUND_PROCESS_ALL_FAILURE = 'RUN_BACKGROUND_PROCESS_ALL_FAILURE'
+export default Refresh

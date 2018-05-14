@@ -3,10 +3,12 @@ import { connect } from 'react-redux'
 import ActionButtons from './ActionButtons'
 import { refreshQueueApi } from '../../thunks/backgroundProcessing'
 
-import Loading from './Loading'
+import FullWidthTableRow from './FullWidthTableRow'
+import Refresh from './Refresh'
 import QueueRows from './QueueRows'
 
 import Spinner from '../Spinner'
+import ShowMessage from '../ShowMessage'
 
 /**
  * @package     Gravity PDF
@@ -62,6 +64,18 @@ export class Container extends React.Component {
     this.props.refreshQueue()
   }
 
+  getTableRows (isLoading, queue) {
+    if (isLoading && !queue.length) {
+      return <FullWidthTableRow text="Loading..." />
+    }
+
+    if (!queue.length) {
+      return <FullWidthTableRow text="Nothing in the queue" />
+    }
+
+    return <QueueRows queue={queue} />
+  }
+
   /**
    * Renders our Core Font downloader UI
    *
@@ -70,16 +84,16 @@ export class Container extends React.Component {
    * @since 5.0
    */
   render () {
-    const isLoading = this.props.isLoading
-    const queue = this.props.queue
-    const tableRows = (!isLoading && queue.length) ? (
-      <QueueRows queue={this.props.queue} />
-    ) : (
-      <Loading />
-    )
+    const {
+      isLoading,
+      queue,
+      errorMessage,
+      refreshQueue
+    } = this.props
 
     return (
       <>
+        {errorMessage.length ? <ShowMessage text={errorMessage} error={true} dismissable={true} delay={6000} /> : null}
         <table className="widefat gfpdf_table">
           <thead>
           <tr>
@@ -88,11 +102,13 @@ export class Container extends React.Component {
             <th>Date</th>
             <th>Status</th>
             <th>Queue</th>
-            <th></th>
+            <th style={{textAlign: 'right'}}>
+              {isLoading ? <Spinner /> : <Refresh callbackFunction={refreshQueue} />}
+            </th>
           </tr>
           </thead>
 
-          {tableRows}
+          {this.getTableRows(isLoading, queue)}
         </table>
 
         <ActionButtons />
@@ -106,12 +122,17 @@ const mapStateToProps = (state) => {
     isLoading: state.backgroundProcessing.loadingQueue,
     status: state.backgroundProcessing.status,
     queue: state.backgroundProcessing.queue,
+    successMessage: state.backgroundProcessing.successMessage,
+    errorMessage: state.backgroundProcessing.errorMessage,
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    refreshQueue: () => {
+    refreshQueue: (e) => {
+      if (typeof e !== 'undefined') {
+        e.preventDefault()
+      }
       dispatch(refreshQueueApi())
     },
   }

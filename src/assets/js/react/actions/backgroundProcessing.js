@@ -1,7 +1,6 @@
 import {
-  REFRESH_QUEUE,
-  REFRESH_QUEUE_SUCCESS,
-  REFRESH_QUEUE_FAILURE
+  DO_API_CALL,
+  EMPTY_QUEUE,
 } from '../actionTypes/backgroundProcessing'
 
 /**
@@ -33,8 +32,14 @@ import {
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-export const refreshQueue = () => {
+export const emptyQueue = () => {
   return {
-    type: REFRESH_QUEUE
+    type: EMPTY_QUEUE
+  }
+}
+
+export const doApiCall = () => {
+  return {
+    type: DO_API_CALL
   }
 }

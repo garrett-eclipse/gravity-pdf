@@ -162,8 +162,11 @@ class Model_Pdf_Queue extends Helper_Abstract_Model {
 	public function run_background_process_all( \WP_REST_Request $request ) {
 		if ( ! $this->queue->is_process_running() && ! $this->queue->is_queue_empty() ) {
 			$begin_queue = $this->queue->dispatch();
+			if ( is_wp_error( $begin_queue ) ) {
+				return $begin_queue;
+			}
+
+			return json_encode(true);
 		}
-
-
 	}
 }

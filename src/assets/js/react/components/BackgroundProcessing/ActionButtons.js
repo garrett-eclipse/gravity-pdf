@@ -1,5 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import { runBackgroundProcessAll } from '../../thunks/backgroundProcessing'
 
 /**
  * @package     Gravity PDF
@@ -36,12 +37,13 @@ export class ActionButtons extends React.Component {
   render () {
     return (
       <>
-        <button id="gfpdf-background-process-run-all" className="button gfpdf-button button-primary" type="button">Run
-          All Tasks
+        <button onClick={this.props.runAllTasks} id="gfpdf-background-process-run-all"
+                className="button gfpdf-button button-primary" type="button">
+          Run All Tasks
         </button>
 
-        <button id="gfpdf-background-process-force-run-all" className="button gfpdf-button" type="button">Force Run All
-          Tasks
+        <button id="gfpdf-background-process-force-run-all" className="button gfpdf-button" type="button">
+          Force Run All Tasks
         </button>
 
         <button id="gfpdf-background-process-delete-all" className="button gfpdf-button" type="button">
@@ -57,7 +59,12 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-  return {}
+  return {
+    runAllTasks: (e) => {
+      e.preventDefault()
+      dispatch(runBackgroundProcessAll())
+    },
+  }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ActionButtons)

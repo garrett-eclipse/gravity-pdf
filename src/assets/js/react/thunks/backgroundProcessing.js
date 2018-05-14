@@ -1,10 +1,11 @@
 import {
-  REFRESH_QUEUE,
   REFRESH_QUEUE_SUCCESS,
-  REFRESH_QUEUE_FAILURE
+  REFRESH_QUEUE_FAILURE,
+  RUN_BACKGROUND_PROCESS_ALL_SUCCESS,
+  RUN_BACKGROUND_PROCESS_ALL_FAILURE
 } from '../actionTypes/backgroundProcessing'
 import {
-  refreshQueue
+  doApiCall, emptyQueue
 } from '../actions/backgroundProcessing'
 import request from 'superagent'
 
@@ -39,12 +40,14 @@ import request from 'superagent'
 
 export function refreshQueueApi () {
   return async (dispatch) => {
-    dispatch(refreshQueue())
+    dispatch(doApiCall())
 
     try {
       const response = await request
         .get(GFPDF.restUrl + 'background-process/')
         .set('X-WP-Nonce', GFPDF.restNonce)
+
+      console.log(response.body)
 
       dispatch({
         type: REFRESH_QUEUE_SUCCESS,
@@ -52,8 +55,35 @@ export function refreshQueueApi () {
         status: response.body.status
       })
     } catch (e) {
-      console.log(e)
-      dispatch({type: REFRESH_QUEUE_FAILURE, e})
+      const errorMessage = e.response.body.message || 'Could not retrieve background processing queue. Please try again.'
+      dispatch({type: REFRESH_QUEUE_FAILURE, errorMessage})
+    }
+  }
+}
+
+export function runBackgroundProcessAll () {
+  return async (dispatch) => {
+    dispatch(doApiCall())
+
+    try {
+      await request
+        .get(GFPDF.restUrl + 'background-process/run/all')
+        .set('X-WP-Nonce', GFPDF.restNonce)
+
+      dispatch({
+        type: RUN_BACKGROUND_PROCESS_ALL_SUCCESS,
+        status: true,
+        successMessage: 'All tasks now now being processed'
+      })
+    } catch (e) {
+      let errorMessage = e.response.body.message || 'Could not begin background processing queue. Please try again.'
+
+      if (e.response.body.code === 'queue_empty') {
+        dispatch(emptyQueue())
+        errorMessage = ''
+      }
+
+      dispatch({type: RUN_BACKGROUND_PROCESS_ALL_FAILURE, errorMessage})
     }
   }
 }
