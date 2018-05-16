@@ -38,8 +38,9 @@ export const emptyQueue = () => {
   }
 }
 
-export const doApiCall = () => {
+export const doApiCall = (task = null) => {
   return {
-    type: DO_API_CALL
+    type: DO_API_CALL,
+    currentTask: task,
   }
 }

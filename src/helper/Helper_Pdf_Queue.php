@@ -142,6 +142,14 @@ class Helper_Pdf_Queue extends GF_Background_Process {
 		return ( count( $callbacks ) > 0 ) ? $callbacks : false;
 	}
 
+	public function run_single_task( $value ) {
+		$this->lock_process();
+		$task = $this->task( $value );
+		$this->unlock_process();
+
+		return $task;
+	}
+
 	public function get_queued_items() {
 		global $wpdb;
 
@@ -180,13 +188,13 @@ class Helper_Pdf_Queue extends GF_Background_Process {
 
 	public function update( $key, $data ) {
 		if ( ! empty( $data ) ) {
-			$old_value = maybe_unserialize(get_site_option( $key ));
+			$old_value = maybe_unserialize( get_site_option( $key ) );
 			if ( $old_value ) {
-				$data = array(
-					'blog_id' => get_current_blog_id(),
+				$data = [
+					'blog_id'   => get_current_blog_id(),
 					'timestamp' => $old_value['timestamp'],
-					'data'    => $data,
-				);
+					'data'      => $data,
+				];
 				update_site_option( $key, $data );
 			}
 		}

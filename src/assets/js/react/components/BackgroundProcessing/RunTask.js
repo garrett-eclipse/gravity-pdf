@@ -1,6 +1,8 @@
+import React from 'react'
+import { connect } from 'react-redux'
+import { runTaskThunk } from '../../thunks/backgroundProcessing'
+
 /**
- * Our Redux Action Type Constants
- *
  * @package     Gravity PDF
  * @copyright   Copyright (c) 2018, Blue Liquid Designs
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
@@ -27,20 +29,34 @@
  Found
  */
 
-export const DO_API_CALL = 'DO_API_CALL'
-export const EMPTY_QUEUE = 'EMPTY_QUEUE'
+/**
+ * @since 5.0
+ */
+export class RunTask extends React.Component {
 
-export const REFRESH_QUEUE_SUCCESS = 'REFRESH_QUEUE_SUCCESS'
-export const REFRESH_QUEUE_FAILURE = 'REFRESH_QUEUE_FAILURE'
+ runTask = (e) => {
+    e.preventDefault()
 
-export const RUN_BACKGROUND_PROCESS_ALL_SUCCESS = 'RUN_BACKGROUND_PROCESS_ALL_SUCCESS'
-export const RUN_BACKGROUND_PROCESS_ALL_FAILURE = 'RUN_BACKGROUND_PROCESS_ALL_FAILURE'
+    this.props.runTaskApi(this.props.task)
+  }
 
-export const RUN_DELETE_ALL_SUCCESS = 'RUN_DELETE_ALL_SUCCESS'
-export const RUN_DELETE_ALL_FAILURE = 'RUN_DELETE_ALL_FAILURE'
+  render () {
+    return (
+      <a href="#" onClick={this.runTask}>Run Task</a>
+    )
+  }
+}
 
-export const RUN_TASK_SUCCESS = 'RUN_TASK_SUCCESS'
-export const RUN_TASK_FAILURE = 'RUN_TASK_FAILURE'
+const mapStateToProps = (state) => {
+  return {}
+}
 
-export const RUN_DELETE_TASK_SUCCESS = 'RUN_DELETE_TASK_SUCCESS'
-export const RUN_DELETE_TASK_FAILURE = 'RUN_DELETE_TASK_FAILURE'
+const mapDispatchToProps = (dispatch) => {
+  return {
+    runTaskApi: (task) => {
+      dispatch(runTaskThunk(task))
+    },
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(RunTask)

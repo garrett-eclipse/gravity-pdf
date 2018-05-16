@@ -170,6 +170,43 @@ class Model_Pdf_Queue extends Helper_Abstract_Model {
 		}
 	}
 
+	public function run_background_process_task( \WP_REST_Request $request ) {
+		if ( $this->queue->is_process_running() || $this->queue->is_queue_empty() ) {
+			return new \WP_Error( 'bad_request', [ 'status' => 400 ] );
+		}
+
+		$params    = $this->get_task_params( $request );
+		$option_id = $params['option_id'];
+		$queue_id  = $params['queue_id'];
+		$task_id   = $params['task_id'];
+
+		$queue = $new_queue = get_site_option( $option_id );
+
+		if ( ! isset( $queue['data'][ $queue_id ] ) ) {
+			return new \WP_Error( 'bad_request', 'Could not find queue item', [ 'status' => 400 ] );
+		}
+
+		foreach ( $queue['data'][ $queue_id ] as $key => $task ) {
+			if ( $task['id'] === $task_id ) {
+				$results = $this->queue->run_single_task( [ $task ] );
+
+				if ( $results !== false ) {
+					$new_queue['data'][ $queue_id ][ $key ] = $results;
+				} else {
+					unset( $new_queue['data'][ $queue_id ][ $key ] );
+				}
+
+				if ( count( $new_queue['data'] ) === 0 ) {
+					$this->queue->delete( $option_id );
+				} else {
+					$this->queue->update( $option_id, $new_queue['data'] );
+				}
+
+				break;
+			}
+		}
+	}
+
 	public function delete_background_processes_all( \WP_REST_Request $request ) {
 		if ( $this->queue->is_process_running() || $this->queue->is_queue_empty() ) {
 			return new \WP_Error( 'bad_request', [ 'status' => 400 ] );
@@ -183,6 +220,23 @@ class Model_Pdf_Queue extends Helper_Abstract_Model {
 	}
 
 	public function delete_background_processes_task( \WP_REST_Request $request ) {
+		$params    = $this->get_task_params( $request );
+		$option_id = $params['option_id'];
+		$queue_id  = $params['queue_id'];
+		$task_id   = $params['task_id'];
+
+		$queue = get_site_option( $option_id );
+
+		if ( ! isset( $queue['data'][ $queue_id ] ) ) {
+			return new \WP_Error( 'bad_request', 'Could not find queue item', [ 'status' => 400 ] );
+		}
+
+		$this->remove_task_from_queue( $queue, $option_id, $queue_id, $task_id );
+
+		return json_encode( true );
+	}
+
+	protected function get_task_params( \WP_REST_Request $request ) {
 		$option_id = $request->get_param( 'option_id' );
 		$queue_id  = $request->get_param( 'queue_id' );
 		$task_id   = $request->get_param( 'task_id' );
@@ -197,11 +251,15 @@ class Model_Pdf_Queue extends Helper_Abstract_Model {
 			}
 		}
 
-		$queue = $new_queue = get_site_option( $option_id );
+		return [
+			'option_id' => $option_id,
+			'queue_id'  => $queue_id,
+			'task_id'   => $task_id,
+		];
+	}
 
-		if ( ! isset( $queue['data'][ $queue_id ] ) ) {
-			return new \WP_Error( 'bad_request', 'Could not find queue item', [ 'status' => 400 ] );
-		}
+	protected function remove_task_from_queue( $queue, $option_id, $queue_id, $task_id ) {
+		$new_queue = $queue;
 
 		foreach ( $queue['data'][ $queue_id ] as $key => $task ) {
 			if ( $task['id'] === $task_id ) {
@@ -221,7 +279,5 @@ class Model_Pdf_Queue extends Helper_Abstract_Model {
 				$this->queue->update( $option_id, $new_queue['data'] );
 			}
 		}
-
-		return json_encode( true );
 	}
 }

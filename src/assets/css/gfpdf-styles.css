@@ -332,6 +332,10 @@ box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.15);
     margin: 0 0 8px;
 }
 
+#gfpdf-background-processing-status tr.current-task {
+    background: lightyellow;
+}
+
 #gfpdf-background-processing-status .delete {
     color: #a00;
 }

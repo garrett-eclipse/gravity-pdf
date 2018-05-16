@@ -1,7 +1,15 @@
 import {
-  DO_API_CALL, EMPTY_QUEUE, REFRESH_QUEUE_FAILURE, REFRESH_QUEUE_SUCCESS,
-  RUN_BACKGROUND_PROCESS_ALL_FAILURE, RUN_BACKGROUND_PROCESS_ALL_SUCCESS, RUN_DELETE_ALL_FAILURE,
-  RUN_DELETE_ALL_SUCCESS, RUN_DELETE_TASK_FAILURE,
+  DO_API_CALL,
+  EMPTY_QUEUE,
+  REFRESH_QUEUE_FAILURE,
+  REFRESH_QUEUE_SUCCESS,
+  RUN_BACKGROUND_PROCESS_ALL_FAILURE,
+  RUN_BACKGROUND_PROCESS_ALL_SUCCESS,
+  RUN_DELETE_ALL_FAILURE,
+  RUN_DELETE_ALL_SUCCESS,
+  RUN_TASK_FAILURE,
+  RUN_TASK_SUCCESS,
+  RUN_DELETE_TASK_FAILURE,
   RUN_DELETE_TASK_SUCCESS
 } from '../actionTypes/backgroundProcessing'
 
@@ -45,6 +53,7 @@ export const initialState = {
   loadingQueue: true,
   successMessage: '',
   errorMessage: '',
+  currentTask: null,
 }
 
 /**
@@ -76,6 +85,7 @@ export default function (state = initialState, action) {
         status: false,
         successMessage: '',
         errorMessage: '',
+        currentTask: action.currentTask
       }
 
     case REFRESH_QUEUE_SUCCESS:
@@ -91,6 +101,7 @@ export default function (state = initialState, action) {
     case RUN_BACKGROUND_PROCESS_ALL_FAILURE:
     case RUN_DELETE_TASK_FAILURE:
     case RUN_DELETE_ALL_FAILURE:
+    case RUN_TASK_FAILURE:
       return {
         ...state,
         loadingQueue: false,
@@ -115,15 +126,25 @@ export default function (state = initialState, action) {
       }
 
     case RUN_DELETE_TASK_SUCCESS:
-      let newQueue = state.queue.map(group => {
-        return group.filter(task => task !== action.task)
-      }).filter(group => group.length)
-
-      console.log(newQueue)
-
       return {
         ...state,
-        queue: newQueue,
+
+        queue: state.queue.map(group => {
+          return group.filter(task => task !== action.task)
+        }).filter(group => group.length),
+
+        loadingQueue: false,
+        successMessage: action.successMessage,
+      }
+
+    case RUN_TASK_SUCCESS:
+      return {
+        ...state,
+
+        queue: state.queue.map(group => {
+          return group.filter(task => task !== action.task)
+        }).filter(group => group.length),
+
         loadingQueue: false,
         successMessage: action.successMessage,
       }

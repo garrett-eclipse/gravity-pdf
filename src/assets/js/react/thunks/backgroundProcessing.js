@@ -5,6 +5,8 @@ import {
   RUN_BACKGROUND_PROCESS_ALL_FAILURE,
   RUN_DELETE_ALL_SUCCESS,
   RUN_DELETE_ALL_FAILURE,
+  RUN_TASK_SUCCESS,
+  RUN_TASK_FAILURE,
   RUN_DELETE_TASK_SUCCESS,
   RUN_DELETE_TASK_FAILURE
 } from '../actionTypes/backgroundProcessing'
@@ -50,8 +52,6 @@ export function refreshQueueApiThunk () {
       const response = await request
         .get(GFPDF.restUrl + 'background-process/')
         .set('X-WP-Nonce', GFPDF.restNonce)
-
-      console.log(response.body)
 
       dispatch({
         type: REFRESH_QUEUE_SUCCESS,
@@ -116,7 +116,7 @@ export function runDeleteAllTasksThunk (task) {
 
 export function runDeleteTaskThunk (task) {
   return async (dispatch) => {
-    dispatch(doApiCall())
+    dispatch(doApiCall(task))
 
     try {
       await request
@@ -132,6 +132,28 @@ export function runDeleteTaskThunk (task) {
     } catch (e) {
       let errorMessage = e.response.body.message || 'Could not delete task from the queue. Please try again.'
       dispatch({type: RUN_DELETE_TASK_FAILURE, errorMessage})
+    }
+  }
+}
+
+export function runTaskThunk (task) {
+  return async (dispatch) => {
+    dispatch(doApiCall(task))
+
+    try {
+      await request
+        .post(GFPDF.restUrl + 'background-process/run/task')
+        .set('X-WP-Nonce', GFPDF.restNonce)
+        .send(task)
+
+      dispatch({
+        type: RUN_TASK_SUCCESS,
+        successMessage: 'Task successfully run',
+        task
+      })
+    } catch (e) {
+      let errorMessage = e.response.body.message || 'Could not run task from the queue. Please try again.'
+      dispatch({type: RUN_TASK_FAILURE, errorMessage})
     }
   }
 }

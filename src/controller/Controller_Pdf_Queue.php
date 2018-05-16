@@ -287,7 +287,7 @@ class Controller_Pdf_Queue extends Helper_Abstract_Controller implements Helper_
 	}
 
 	public function add_queue_management_endpoints() {
-		register_rest_route( 'gravity-pdf/v1', 'background-process/', [
+		register_rest_route( 'gravity-pdf/v1', 'background-process', [
 			'methods'             => \WP_REST_Server::READABLE,
 			'callback'            => [ $this->model, 'get_background_process_all' ],
 			'permission_callback' => [ $this->model, 'check_permission_edit_settings' ],
@@ -299,26 +299,20 @@ class Controller_Pdf_Queue extends Helper_Abstract_Controller implements Helper_
 			'permission_callback' => [ $this->model, 'check_permission_edit_settings' ],
 		] );
 
-		register_rest_route( 'gravity-pdf/v1', '/background-process/run/queue/', [
-			'methods'             => \WP_REST_Server::READABLE,
-			'callback'            => [ $this->model, 'run_background_process_queue' ],
-			'permission_callback' => [ $this->model, 'check_permission_edit_settings' ],
-		] );
-
-		register_rest_route( 'gravity-pdf/v1', '/background-process/run/task/', [
-			'methods'             => \WP_REST_Server::READABLE,
+		register_rest_route( 'gravity-pdf/v1', '/background-process/run/task', [
+			'methods'             => \WP_REST_Server::CREATABLE,
 			'callback'            => [ $this->model, 'run_background_process_task' ],
 			'permission_callback' => [ $this->model, 'check_permission_edit_settings' ],
 		] );
 
 		/* Use CREATABLE / POST to allow for a payload body */
-		register_rest_route( 'gravity-pdf/v1', '/background-process/delete/', [
+		register_rest_route( 'gravity-pdf/v1', '/background-process/delete', [
 			'methods'             => \WP_REST_Server::CREATABLE,
 			'callback'            => [ $this->model, 'delete_background_processes_all' ],
 			'permission_callback' => [ $this->model, 'check_permission_edit_settings' ],
 		] );
 
-		register_rest_route( 'gravity-pdf/v1', '/background-process/delete/task/', [
+		register_rest_route( 'gravity-pdf/v1', '/background-process/delete/task', [
 			'methods'             => \WP_REST_Server::CREATABLE,
 			'callback'            => [ $this->model, 'delete_background_processes_task' ],
 			'permission_callback' => [ $this->model, 'check_permission_edit_settings' ],
