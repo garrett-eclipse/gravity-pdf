@@ -119,13 +119,15 @@ export function runDeleteTaskThunk (task) {
     dispatch(doApiCall(task))
 
     try {
-      await request
+      const response = await request
         .post(GFPDF.restUrl + 'background-process/delete/task')
         .set('X-WP-Nonce', GFPDF.restNonce)
         .send(task)
 
       dispatch({
         type: RUN_DELETE_TASK_SUCCESS,
+        queue: response.body.queue,
+        status: response.body.status,
         successMessage: 'Task Deleted',
         task
       })
@@ -141,13 +143,15 @@ export function runTaskThunk (task) {
     dispatch(doApiCall(task))
 
     try {
-      await request
+      const response = await request
         .post(GFPDF.restUrl + 'background-process/run/task')
         .set('X-WP-Nonce', GFPDF.restNonce)
         .send(task)
 
       dispatch({
         type: RUN_TASK_SUCCESS,
+        queue: response.body.queue,
+        status: response.body.status,
         successMessage: 'Task successfully run',
         task
       })
@@ -155,5 +159,14 @@ export function runTaskThunk (task) {
       let errorMessage = e.response.body.message || 'Could not run task from the queue. Please try again.'
       dispatch({type: RUN_TASK_FAILURE, errorMessage})
     }
+  }
+}
+
+export function runQueueThunk (queue) {
+  return (dispatch) => {
+
+    queue.map(async (task) => {
+      console.log(await runTaskThunk(task))
+    })
   }
 }

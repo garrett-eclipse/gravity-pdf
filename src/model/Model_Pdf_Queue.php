@@ -92,17 +92,14 @@ class Model_Pdf_Queue extends Helper_Abstract_Model {
 					$function_name = $this->get_queue_function_name( $command['func'] );
 					$function_args = $this->get_queue_function_args( $function_name, $command['args'] );
 
-					if ( isset( $command['retry'] ) ) {
-						$status_text = 'Retrying';
-					}
-
 					$queue[ $i ][] = [
 						'id'        => $queue_item['option_id'],
 						'option_id' => $queue_item['option_name'],
 						'queue_id'  => $queue_id,
 						'task_id'   => $command['id'],
 						'timestamp' => $queue_data['timestamp'],
-						'status'    => $status_text,
+						'retry'     => ( isset( $command['retry'] ) ) ? $command['retry'] : 0,
+						'status'    => ( isset( $command['retry'] ) ) ? $command['retry'] . ' Failure(s)' : $status_text,
 						'queue'     => "$function_name ($function_args)",
 					];
 				}
@@ -191,7 +188,7 @@ class Model_Pdf_Queue extends Helper_Abstract_Model {
 				$results = $this->queue->run_single_task( [ $task ] );
 
 				if ( $results !== false ) {
-					$new_queue['data'][ $queue_id ][ $key ] = $results;
+					$new_queue['data'][ $queue_id ][ $key ] = $results[0];
 				} else {
 					unset( $new_queue['data'][ $queue_id ][ $key ] );
 				}
@@ -205,6 +202,8 @@ class Model_Pdf_Queue extends Helper_Abstract_Model {
 				break;
 			}
 		}
+
+		return $this->get_background_process_all( $request );
 	}
 
 	public function delete_background_processes_all( \WP_REST_Request $request ) {
@@ -233,7 +232,7 @@ class Model_Pdf_Queue extends Helper_Abstract_Model {
 
 		$this->remove_task_from_queue( $queue, $option_id, $queue_id, $task_id );
 
-		return json_encode( true );
+		return $this->get_background_process_all( $request );
 	}
 
 	protected function get_task_params( \WP_REST_Request $request ) {

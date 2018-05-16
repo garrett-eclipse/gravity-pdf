@@ -117,7 +117,9 @@ class Helper_Pdf_Queue extends GF_Background_Process {
 			try {
 				/* Call our use function and pass in any arguments */
 				$args = ( isset( $callback['args'] ) && is_array( $callback['args'] ) ) ? $callback['args'] : [];
-				call_user_func_array( $callback['func'], $args );
+				//call_user_func_array( $callback['func'], $args );
+				$callback['retry'] = isset( $callback['retry'] ) ? $callback['retry'] + 1 : 1;
+				array_unshift( $callbacks, $callback );
 			} catch ( Exception $e ) {
 
 				/* Log Error */

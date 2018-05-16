@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import DeleteTask from './DeleteTask'
 import RunTask from './RunTask'
+import RunQueue from './RunQueue'
 
 /**
  * @package     Gravity PDF
@@ -41,7 +42,9 @@ export class QueueRows extends React.Component {
         <tbody key={groupKey}>
         {group.map((task, taskIndex) => {
           const taskKey = 'gfpdf-background-process-task-' + groupIndex + '-' + taskIndex
-          const taskClass = task === this.props.currentTask ? 'current-task' : ''
+          let taskClass = task.retry > 0 ? 'error-task' : ''
+          taskClass = task === this.props.currentTask ? 'current-task' : taskClass
+
           return (
             <tr key={taskKey} className={taskClass}>
               <td>{task.id}</td>
@@ -50,7 +53,7 @@ export class QueueRows extends React.Component {
               <td>{task.status}</td>
               <td>{task.queue}</td>
               <td>
-                {taskIndex === 0 ? <span><a href="#">Run queue</a> | <RunTask task={task} /> | </span> : null}
+                {taskIndex === 0 ? <span><RunQueue queue={group} /> | <RunTask task={task} /> | </span> : null}
                 <DeleteTask task={task} />
               </td>
             </tr>

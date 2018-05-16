@@ -128,11 +128,8 @@ export default function (state = initialState, action) {
     case RUN_DELETE_TASK_SUCCESS:
       return {
         ...state,
-
-        queue: state.queue.map(group => {
-          return group.filter(task => task !== action.task)
-        }).filter(group => group.length),
-
+        queue: action.queue,
+        status: action.status,
         loadingQueue: false,
         successMessage: action.successMessage,
       }
@@ -140,11 +137,8 @@ export default function (state = initialState, action) {
     case RUN_TASK_SUCCESS:
       return {
         ...state,
-
-        queue: state.queue.map(group => {
-          return group.filter(task => task !== action.task)
-        }).filter(group => group.length),
-
+        queue: action.queue,
+        status: action.status,
         loadingQueue: false,
         successMessage: action.successMessage,
       }

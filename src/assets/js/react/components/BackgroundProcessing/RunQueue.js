@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { runTaskThunk } from '../../thunks/backgroundProcessing'
+import { runQueueThunk } from '../../thunks/backgroundProcessing'
 
 /**
  * @package     Gravity PDF
@@ -32,17 +32,17 @@ import { runTaskThunk } from '../../thunks/backgroundProcessing'
 /**
  * @since 5.0
  */
-export class RunTask extends React.Component {
+export class RunQueue extends React.Component {
 
- runTask = (e) => {
+ runQueue = (e) => {
     e.preventDefault()
 
-   this.props.runTaskApi(this.props.task)
+   this.props.runQueueApi(this.props.queue)
   }
 
   render () {
     return (
-      <a href="#" onClick={this.runTask}>Run Task</a>
+      <a href="#" onClick={this.runQueue}>Run queue</a>
     )
   }
 }
@@ -53,10 +53,10 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    runTaskApi: (task) => {
-      dispatch(runTaskThunk(task))
+    runQueueApi: (queue) => {
+      dispatch(runQueueThunk(queue))
     },
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(RunTask)
+export default connect(mapStateToProps, mapDispatchToProps)(RunQueue)
